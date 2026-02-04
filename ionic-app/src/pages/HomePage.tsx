@@ -2,6 +2,15 @@ import { useAuth } from '@/hooks/auth/useAuth';
 import ExampleService from '@/services/example/example.service';
 import { ExampleFormSchema, type ExampleFormData } from '@/types/example.model';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonRefresher,
+  IonRefresherContent,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
 import AddIcon from '@mui/icons-material/Add';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -9,7 +18,6 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Alert,
-  AppBar,
   Avatar,
   Box,
   Button,
@@ -27,7 +35,6 @@ import {
   Paper,
   Skeleton,
   TextField,
-  Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -36,11 +43,9 @@ import { useForm } from 'react-hook-form';
 export function HomePage() {
   const { user, logout, logoutState } = useAuth();
 
-  // Fetch examples
   const { data: examplesData, refetch, isLoading, isError, error, isRefetching } =
     ExampleService.useGetExamplesQuery();
 
-  // Create example mutation
   const createMutation = ExampleService.useCreateExampleMutation();
 
   const {
@@ -54,186 +59,169 @@ export function HomePage() {
 
   const onSubmit = (data: ExampleFormData) => {
     createMutation.mutate(data, {
-      onSuccess: () => {
-        reset();
-      },
+      onSuccess: () => reset(),
     });
+  };
+
+  const handleRefresh = async (event: CustomEvent) => {
+    await refetch();
+    event.detail.complete();
   };
 
   const examples = examplesData?.data ?? [];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* App Bar */}
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{
-          bgcolor: 'white',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            OmniSight
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar
-                sx={{
-                  width: 36,
-                  height: 36,
-                  bgcolor: 'primary.main',
-                  fontSize: '0.9rem',
-                }}
-              >
-                {user?.email?.charAt(0).toUpperCase()}
-              </Avatar>
-              <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                {user?.email}
-              </Typography>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>
+            <Box
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              OmniSight
             </Box>
+          </IonTitle>
+          <Box slot="end" sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: 'primary.main',
+                fontSize: '0.8rem',
+              }}
+            >
+              {user?.email?.charAt(0).toUpperCase()}
+            </Avatar>
             <Tooltip title="Logout">
               <IconButton
                 onClick={logout}
                 disabled={logoutState.isPending}
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover': { color: 'error.main', bgcolor: 'error.light' + '20' },
-                }}
+                size="small"
+                sx={{ color: 'text.secondary' }}
               >
-                {logoutState.isPending ? <CircularProgress size={20} /> : <LogoutIcon />}
+                {logoutState.isPending ? <CircularProgress size={18} /> : <LogoutIcon fontSize="small" />}
               </IconButton>
             </Tooltip>
           </Box>
-        </Toolbar>
-      </AppBar>
+        </IonToolbar>
+      </IonHeader>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Welcome Section */}
-        <Paper
-          sx={{
-            p: 4,
-            mb: 4,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: 4,
-          }}
-        >
-          <Typography variant="h4" fontWeight={700} gutterBottom>
-            Welcome back! 👋
-          </Typography>
-          <Typography variant="body1" sx={{ opacity: 0.9 }}>
-            Manage your examples and explore the dashboard.
-          </Typography>
-        </Paper>
+      <IonContent>
+        {/* Ionic Pull-to-Refresh */}
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
 
-        <Grid container spacing={4}>
-          {/* Create Example Form */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <AddIcon color="primary" />
-                  <Typography variant="h6" fontWeight={600}>
-                    Add New Example
-                  </Typography>
-                </Box>
+        <Container maxWidth="lg" sx={{ py: 3 }}>
+          {/* Welcome Banner */}
+          <Paper
+            sx={{
+              p: 3,
+              mb: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              borderRadius: 3,
+            }}
+          >
+            <Typography variant="h5" fontWeight={700} gutterBottom>
+              Welcome back! 👋
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              {user?.email} • Pull down to refresh
+            </Typography>
+          </Paper>
 
-                <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    placeholder="Enter name"
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
-                    {...register('name')}
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <PersonOutlineIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                      ),
-                    }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    placeholder="Enter email"
-                    type="email"
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                    {...register('email')}
-                    sx={{ mb: 3 }}
-                    InputProps={{
-                      startAdornment: (
-                        <EmailOutlinedIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                      ),
-                    }}
-                  />
-
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    size="large"
-                    disabled={createMutation.isPending}
-                    startIcon={createMutation.isPending ? null : <AddIcon />}
-                    sx={{
-                      background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                      },
-                    }}
-                  >
-                    {createMutation.isPending ? (
-                      <CircularProgress size={24} color="inherit" />
-                    ) : (
-                      'Create Example'
-                    )}
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Examples List */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="h6" fontWeight={600}>
-                      Examples
+          <Grid container spacing={3}>
+            {/* Create Form */}
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Card>
+                <CardContent sx={{ p: 2.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <AddIcon color="primary" />
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Add New Example
                     </Typography>
-                    {!isLoading && (
-                      <Box
-                        sx={{
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          px: 1.5,
-                          py: 0.25,
-                          borderRadius: 10,
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                        }}
-                      >
-                        {examples.length}
-                      </Box>
-                    )}
                   </Box>
-                  <Tooltip title="Refresh">
-                    <IconButton onClick={() => refetch()} disabled={isRefetching}>
+
+                  <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Name"
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                      {...register('name')}
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        startAdornment: <PersonOutlineIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />,
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Email"
+                      type="email"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                      {...register('email')}
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        startAdornment: <EmailOutlinedIcon sx={{ mr: 1, color: 'text.secondary', fontSize: 20 }} />,
+                      }}
+                    />
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      disabled={createMutation.isPending}
+                      startIcon={createMutation.isPending ? null : <AddIcon />}
+                      sx={{
+                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                        '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)' },
+                      }}
+                    >
+                      {createMutation.isPending ? <CircularProgress size={22} color="inherit" /> : 'Create'}
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Examples List */}
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Card>
+                <CardContent sx={{ p: 2.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        Examples
+                      </Typography>
+                      {!isLoading && (
+                        <Box
+                          sx={{
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            px: 1,
+                            py: 0.25,
+                            borderRadius: 5,
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {examples.length}
+                        </Box>
+                      )}
+                    </Box>
+                    <IconButton size="small" onClick={() => refetch()} disabled={isRefetching}>
                       <RefreshIcon
+                        fontSize="small"
                         sx={{
                           animation: isRefetching ? 'spin 1s linear infinite' : 'none',
                           '@keyframes spin': {
@@ -243,104 +231,69 @@ export function HomePage() {
                         }}
                       />
                     </IconButton>
-                  </Tooltip>
-                </Box>
+                  </Box>
 
-                <Divider sx={{ mb: 2 }} />
+                  <Divider sx={{ mb: 2 }} />
 
-                {isError && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    {error?.message ?? 'Failed to load examples'}
-                  </Alert>
-                )}
+                  {isError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      {error?.message ?? 'Failed to load'}
+                    </Alert>
+                  )}
 
-                {isLoading ? (
-                  <Box>
-                    {[1, 2, 3].map((i) => (
-                      <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Skeleton variant="circular" width={48} height={48} />
-                        <Box sx={{ flex: 1 }}>
-                          <Skeleton variant="text" width="60%" />
-                          <Skeleton variant="text" width="40%" />
+                  {isLoading ? (
+                    <Box>
+                      {[1, 2, 3].map((i) => (
+                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <Skeleton variant="circular" width={40} height={40} />
+                          <Box sx={{ flex: 1 }}>
+                            <Skeleton variant="text" width="50%" />
+                            <Skeleton variant="text" width="30%" />
+                          </Box>
                         </Box>
-                      </Box>
-                    ))}
-                  </Box>
-                ) : examples.length === 0 ? (
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      py: 6,
-                      color: 'text.secondary',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        bgcolor: 'grey.100',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mx: 'auto',
-                        mb: 2,
-                      }}
-                    >
-                      <PersonOutlineIcon sx={{ fontSize: 40, color: 'grey.400' }} />
+                      ))}
                     </Box>
-                    <Typography variant="body1" fontWeight={500}>
-                      No examples yet
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Create your first example using the form
-                    </Typography>
-                  </Box>
-                ) : (
-                  <List sx={{ p: 0 }}>
-                    {examples.map((example, index) => (
-                      <Box key={example.id}>
-                        <ListItem
-                          sx={{
-                            px: 0,
-                            py: 1.5,
-                            '&:hover': { bgcolor: 'grey.50', borderRadius: 2 },
-                          }}
-                        >
-                          <ListItemAvatar>
-                            <Avatar
-                              sx={{
-                                bgcolor: `hsl(${(index * 60) % 360}, 70%, 60%)`,
-                                fontWeight: 600,
-                              }}
-                            >
-                              {example.name.charAt(0).toUpperCase()}
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={
-                              <Typography fontWeight={600}>{example.name}</Typography>
-                            }
-                            secondary={
-                              <Typography variant="body2" color="text.secondary">
-                                {example.email}
-                              </Typography>
-                            }
-                          />
-                          <Typography variant="caption" color="text.secondary">
-                            {new Date(example.createdAt).toLocaleDateString()}
-                          </Typography>
-                        </ListItem>
-                        {index < examples.length - 1 && <Divider />}
-                      </Box>
-                    ))}
-                  </List>
-                )}
-              </CardContent>
-            </Card>
+                  ) : examples.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+                      <PersonOutlineIcon sx={{ fontSize: 48, color: 'grey.300', mb: 1 }} />
+                      <Typography variant="body2">No examples yet</Typography>
+                    </Box>
+                  ) : (
+                    <List sx={{ p: 0 }}>
+                      {examples.map((example, index) => (
+                        <Box key={example.id}>
+                          <ListItem sx={{ px: 0, py: 1 }}>
+                            <ListItemAvatar>
+                              <Avatar
+                                sx={{
+                                  width: 40,
+                                  height: 40,
+                                  bgcolor: `hsl(${(index * 60) % 360}, 70%, 60%)`,
+                                  fontSize: '0.9rem',
+                                }}
+                              >
+                                {example.name.charAt(0).toUpperCase()}
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={<Typography variant="body2" fontWeight={600}>{example.name}</Typography>}
+                              secondary={<Typography variant="caption" color="text.secondary">{example.email}</Typography>}
+                            />
+                            <Typography variant="caption" color="text.secondary">
+                              {new Date(example.createdAt).toLocaleDateString()}
+                            </Typography>
+                          </ListItem>
+                          {index < examples.length - 1 && <Divider />}
+                        </Box>
+                      ))}
+                    </List>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
-    </Box>
+        </Container>
+      </IonContent>
+    </IonPage>
   );
 }

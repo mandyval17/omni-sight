@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/auth/useAuth';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,40 +10,39 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children, guestOnly = false }: AuthGuardProps) {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const history = useHistory();
   const location = useLocation();
 
   useEffect(() => {
     if (isLoading) return;
 
     if (guestOnly) {
-      // Guest-only route but user is logged in
       if (user) {
-        navigate('/home', { replace: true });
+        history.replace('/home');
       }
     } else {
-      // Protected route but user is not logged in
       if (!user) {
-        navigate(`/login?from=${encodeURIComponent(location.pathname)}`, { replace: true });
+        history.replace(`/login?from=${encodeURIComponent(location.pathname)}`);
       }
     }
-  }, [guestOnly, user, isLoading, navigate, location.pathname]);
+  }, [guestOnly, user, isLoading, history, location.pathname]);
 
   if (isLoading) {
     return (
-      <Backdrop
-        open
+      <Box
         sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
           bgcolor: 'background.default',
-          zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
-        <CircularProgress color="primary" size={48} />
-      </Backdrop>
+        <CircularProgress size={40} />
+      </Box>
     );
   }
 
-  // Don't render if redirect is needed
   if (guestOnly && user) return null;
   if (!guestOnly && !user) return null;
 

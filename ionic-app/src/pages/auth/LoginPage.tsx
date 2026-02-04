@@ -1,6 +1,7 @@
 import { useAuth } from '@/hooks/auth/useAuth';
 import { LoginFormSchema, type LoginFormData } from '@/types/auth.model';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { IonContent, IonPage } from '@ionic/react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {
@@ -38,133 +39,137 @@ export function LoginPage() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        py: 4,
-      }}
-    >
-      <Container maxWidth="sm">
-        <Paper
-          elevation={0}
+    <IonPage>
+      <IonContent>
+        <Box
           sx={{
-            p: { xs: 3, sm: 5 },
-            borderRadius: 4,
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            minHeight: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            py: 4,
           }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
-            <Avatar
+          <Container maxWidth="sm">
+            <Paper
+              elevation={0}
               sx={{
-                m: 1,
-                bgcolor: 'primary.main',
-                width: 56,
-                height: 56,
-                boxShadow: '0 8px 16px rgba(99, 102, 241, 0.3)',
+                p: { xs: 3, sm: 5 },
+                borderRadius: 4,
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
               }}
             >
-              <LockOutlinedIcon fontSize="large" />
-            </Avatar>
-            <Typography component="h1" variant="h4" fontWeight={700} sx={{ mt: 2 }}>
-              Welcome back
-            </Typography>
-            <Typography color="text.secondary" sx={{ mt: 1 }}>
-              Sign in to continue to your account
-            </Typography>
-          </Box>
-
-          {loginState.error && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-              {loginState.error.response?.data?.message ?? loginState.error.message}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              autoComplete="email"
-              autoFocus
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              {...register('email')}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              {...register('password')}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 3 }}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={loginState.isPending}
-              sx={{
-                py: 1.5,
-                fontSize: '1rem',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                },
-              }}
-            >
-              {loginState.isPending ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
-                <Link
-                  component={RouterLink}
-                  to="/register"
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+                <Avatar
                   sx={{
-                    fontWeight: 600,
-                    color: 'primary.main',
-                    textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' },
+                    m: 1,
+                    bgcolor: 'primary.main',
+                    width: 56,
+                    height: 56,
+                    boxShadow: '0 8px 16px rgba(99, 102, 241, 0.3)',
                   }}
                 >
-                  Sign up
-                </Link>
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-      </Container>
-    </Box>
+                  <LockOutlinedIcon fontSize="large" />
+                </Avatar>
+                <Typography component="h1" variant="h4" fontWeight={700} sx={{ mt: 2 }}>
+                  Welcome back
+                </Typography>
+                <Typography color="text.secondary" sx={{ mt: 1 }}>
+                  Sign in to continue to your account
+                </Typography>
+              </Box>
+
+              {loginState.error && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                  {loginState.error.response?.data?.message ?? loginState.error.message}
+                </Alert>
+              )}
+
+              <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  autoComplete="email"
+                  autoFocus
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  {...register('email')}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  autoComplete="current-password"
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  {...register('password')}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 3 }}
+                />
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loginState.isPending}
+                  sx={{
+                    py: 1.5,
+                    fontSize: '1rem',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                    },
+                  }}
+                >
+                  {loginState.isPending ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    'Sign In'
+                  )}
+                </Button>
+
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Don't have an account?{' '}
+                    <Link
+                      component={RouterLink}
+                      to="/register"
+                      sx={{
+                        fontWeight: 600,
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': { textDecoration: 'underline' },
+                      }}
+                    >
+                      Sign up
+                    </Link>
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Container>
+        </Box>
+      </IonContent>
+    </IonPage>
   );
 }

@@ -5,7 +5,7 @@ import axios, { type InternalAxiosRequestConfig } from 'axios';
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 10_000,
+  timeout: 5_000, // 5 second timeout
   withCredentials: true,
 });
 
@@ -17,25 +17,23 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Auto-refresh on 401 (but not for auth endpoints)
-    if (
-      error.response?.status === 401 &&
-      !original._retry &&
-      !original.url?.includes('/auth/refresh') &&
-      !original.url?.includes('/auth/login') &&
-      !original.url?.includes('/auth/me')
-    ) {
+    // Skip refresh for auth endpoints
+    const isAuthEndpoint =
+      original.url?.includes('/auth/refresh') ||
+      original.url?.includes('/auth/login') ||
+      original.url?.includes('/auth/me') ||
+      original.url?.includes('/auth/register');
+
+    // Auto-refresh on 401 for non-auth endpoints
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true;
 
       if (!isRefreshing) {
         isRefreshing = true;
         refreshPromise = axiosInstance
           .post('/auth/refresh')
-          .then((res) => res)
           .catch((refreshError) => {
-            // Refresh failed - redirect to login
             console.error('Token refresh failed:', refreshError);
-            window.location.href = '/login';
             return Promise.reject(refreshError);
           })
           .finally(() => {
@@ -48,7 +46,6 @@ axiosInstance.interceptors.response.use(
         await refreshPromise;
         return axiosInstance(original);
       } catch {
-        // Refresh failed, error already handled above
         return Promise.reject(error);
       }
     }

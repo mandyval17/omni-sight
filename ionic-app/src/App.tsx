@@ -3,44 +3,42 @@ import { AuthProvider } from '@/hooks/auth/authContext';
 import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { IonApp, IonRouterOutlet } from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { Redirect, Route } from 'react-router-dom';
 
 const App: React.FC = () => (
-  <AuthProvider>
-    <Routes>
-      {/* Auth routes (guest only) */}
-      <Route
-        path="/login"
-        element={
-          <AuthGuard guestOnly>
-            <LoginPage />
-          </AuthGuard>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <AuthGuard guestOnly>
-            <RegisterPage />
-          </AuthGuard>
-        }
-      />
+  <IonApp>
+    <IonReactRouter>
+      <AuthProvider>
+        <IonRouterOutlet>
+          {/* Auth routes (guest only) */}
+          <Route exact path="/login">
+            <AuthGuard guestOnly>
+              <LoginPage />
+            </AuthGuard>
+          </Route>
+          <Route exact path="/register">
+            <AuthGuard guestOnly>
+              <RegisterPage />
+            </AuthGuard>
+          </Route>
 
-      {/* Protected routes */}
-      <Route
-        path="/home"
-        element={
-          <AuthGuard>
-            <HomePage />
-          </AuthGuard>
-        }
-      />
+          {/* Protected routes */}
+          <Route exact path="/home">
+            <AuthGuard>
+              <HomePage />
+            </AuthGuard>
+          </Route>
 
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
-  </AuthProvider>
+          {/* Default redirect */}
+          <Route exact path="/">
+            <Redirect to="/home" />
+          </Route>
+        </IonRouterOutlet>
+      </AuthProvider>
+    </IonReactRouter>
+  </IonApp>
 );
 
 export default App;

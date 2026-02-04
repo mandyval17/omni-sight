@@ -1,11 +1,11 @@
 import AuthService from '@/services/auth/auth.service';
 import type { LoginFormData, User } from '@/types/auth.model';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { AuthContext } from './useAuth';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -14,21 +14,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Check auth status on mount
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async () => {
       try {
         const res = await AuthService.me();
-        if (res?.data) {
-          setUser(res.data);
-        } else {
+        if (isMounted) {
+          if (res?.data) {
+            setUser(res.data);
+          } else {
+            setUser(null);
+          }
+        }
+      } catch (err) {
+        console.log('Auth check failed:', err);
+        if (isMounted) {
           setUser(null);
         }
-      } catch {
-        setUser(null);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
+
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = useCallback(
@@ -36,21 +50,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loginMutation.mutate(data, {
         onSuccess: (res) => {
           if (res?.data?.user) setUser(res.data.user);
-          navigate('/home');
+          history.push('/home');
         },
       });
     },
-    [loginMutation, navigate]
+    [loginMutation, history]
   );
 
   const logout = useCallback(() => {
     logoutMutation.mutate(undefined, {
       onSettled: () => {
         setUser(null);
-        navigate('/login');
+        history.push('/login');
       },
     });
-  }, [logoutMutation, navigate]);
+  }, [logoutMutation, history]);
 
   const value = {
     isLoading,
