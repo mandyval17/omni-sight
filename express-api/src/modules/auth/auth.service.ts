@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
+import { prisma } from '../../../prisma/prisma.js';
 import { config } from '../../config/env.js';
-import { prisma } from '../../lib/prisma.js';
 import type { JwtPayload } from '../../types/index.js';
 import { BadRequestError, UnauthorizedError } from '../../utils/app-error.js';
 import type { LoginInput, RegisterInput } from './auth.schema.js';

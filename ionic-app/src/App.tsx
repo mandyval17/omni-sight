@@ -1,5 +1,6 @@
 import { AuthGuard } from '@/components/AuthGuard';
 import { AuthProvider } from '@/hooks/auth/authContext';
+import { DashboardPage } from '@/pages/DashboardPage';
 import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
@@ -24,6 +25,13 @@ const App: React.FC = () => (
             </AuthGuard>
           </Route>
 
+          {/* Figma 2186-665: Ratna AI dashboard */}
+          <Route exact path="/dashboard">
+            <AuthGuard>
+              <DashboardPage />
+            </AuthGuard>
+          </Route>
+
           {/* Protected routes */}
           <Route exact path="/home">
             <AuthGuard>
@@ -33,7 +41,7 @@ const App: React.FC = () => (
 
           {/* Default redirect */}
           <Route exact path="/">
-            <Redirect to="/home" />
+            <Redirect to="/dashboard" />
           </Route>
         </IonRouterOutlet>
       </AuthProvider>

@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma.js';
+import { prisma } from '../../../prisma/prisma.js';
 import { BadRequestError, InternalError } from '../../utils/app-error.js';
 import type { CreateExampleInput } from './example.schema.js';
 

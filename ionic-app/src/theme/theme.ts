@@ -1,100 +1,189 @@
+/**
+ * Omnisight Design System
+ * Single source of truth for all design tokens
+ * Based on Figma design (node 2186-665)
+ */
 import { createTheme } from '@mui/material/styles';
 
-export const theme = createTheme({
+// =============================================================================
+// DESIGN TOKENS
+// =============================================================================
+
+/** Color palette from Figma get_variable_defs */
+export const colors = {
+  // Primary accent (Colors / Light Blue)
+  primary: '#34cfed',
+  primaryDark: '#04435b', // Colors / Dark Blue
+  primaryGlow: 'rgba(52, 207, 237, 0.4)',
+
+  // Backgrounds
+  background: '#070707',
+  surface: '#1e1e1e',
+  surfaceBorder: 'rgba(255, 255, 255, 0.1)', // Neutrals / White 10%
+
+  // Text (Neutrals / White)
+  text: '#ffffff',
+  textMuted: 'rgba(255, 255, 255, 0.8)',
+  textInactive: 'rgba(255, 255, 255, 0.4)',
+
+  // Overlays
+  overlay: 'rgba(255, 255, 255, 0.1)', // Neutrals / White 10%
+
+  // Nav background
+  navBg: '#151515',
+
+  // Status
+  success: '#22c55e',
+  error: '#ef4444',
+  warning: '#eab308',
+} as const;
+
+/** Spacing scale (px) */
+export const spacing = {
+  xs: 8,
+  sm: 12,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+} as const;
+
+/** Border radius scale (px) */
+export const radius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  pill: 9999,
+} as const;
+
+/** Typography */
+export const typography = {
+  fontFamily: {
+    sans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    serif: '"Playfair Display", Georgia, serif',
+  },
+  fontSize: {
+    xs: '12px',
+    sm: '14px',
+    base: '15px',
+    lg: '16px',
+    xl: '17px',
+    '2xl': '24px',
+    '3xl': '28px',
+  },
+  fontWeight: {
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  },
+  lineHeight: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.6,
+  },
+} as const;
+
+/** Component-specific dimensions from Figma */
+export const components = {
+  header: {
+    height: 56,
+    paddingX: 24,
+    menuButtonSize: 46,
+  },
+  nav: {
+    height: 89,
+    iconSize: 24,
+    paddingX: 48,
+  },
+  card: {
+    width: 188,
+    height: 74,
+    radius: 16,
+    padding: 16,
+    iconSize: 42,
+    iconRadius: 10,
+    gap: 10,
+  },
+  input: {
+    height: 66,
+    radius: 33,
+    paddingX: 24,
+    sendButtonSize: 50,
+  },
+  orb: {
+    size: 200,
+  },
+} as const;
+
+// =============================================================================
+// MUI THEME (for MUI components only)
+// =============================================================================
+
+export const muiTheme = createTheme({
   palette: {
-    mode: 'light',
+    mode: 'dark',
     primary: {
-      main: '#6366f1',
-      light: '#818cf8',
-      dark: '#4f46e5',
-      contrastText: '#ffffff',
-    },
-    secondary: {
-      main: '#ec4899',
-      light: '#f472b6',
-      dark: '#db2777',
-      contrastText: '#ffffff',
+      main: colors.primary,
+      dark: colors.primaryDark,
+      contrastText: colors.background,
     },
     background: {
-      default: '#f8fafc',
-      paper: '#ffffff',
+      default: colors.background,
+      paper: colors.surface,
     },
     text: {
-      primary: '#1e293b',
-      secondary: '#64748b',
+      primary: colors.text,
+      secondary: colors.textMuted,
     },
-    error: {
-      main: '#ef4444',
-    },
-    success: {
-      main: '#22c55e',
-    },
+    success: { main: colors.success },
+    error: { main: colors.error },
+    warning: { main: colors.warning },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: {
-      fontWeight: 700,
-      fontSize: '2.5rem',
-    },
-    h2: {
-      fontWeight: 600,
-      fontSize: '2rem',
-    },
-    h3: {
-      fontWeight: 600,
-      fontSize: '1.5rem',
-    },
-    h4: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
-    },
-    button: {
-      textTransform: 'none',
-      fontWeight: 600,
-    },
+    fontFamily: typography.fontFamily.sans,
+    button: { textTransform: 'none', fontWeight: typography.fontWeight.semibold },
   },
-  shape: {
-    borderRadius: 12,
-  },
+  shape: { borderRadius: radius.md },
+  spacing: 4,
   components: {
-    MuiButton: {
+    MuiCssBaseline: {
       styleOverrides: {
-        root: {
-          borderRadius: 10,
-          padding: '10px 24px',
-          fontSize: '0.95rem',
-        },
-        contained: {
-          boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.39)',
-          '&:hover': {
-            boxShadow: '0 6px 20px rgba(99, 102, 241, 0.45)',
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 10,
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
+        body: {
+          backgroundColor: colors.background,
+          color: colors.text,
         },
       },
     },
   },
 });
+
+// =============================================================================
+// IONIC CSS VARIABLES (inject via style tag or CSS)
+// =============================================================================
+
+export const ionicCssVars = `
+  :root {
+    --ion-background-color: ${colors.background};
+    --ion-text-color: ${colors.text};
+    --ion-font-family: ${typography.fontFamily.sans};
+    --ion-color-primary: ${colors.primary};
+    --ion-color-primary-rgb: 52, 207, 237;
+    --ion-toolbar-background: transparent;
+    --ion-item-background: transparent;
+  }
+`;
+
+// =============================================================================
+// GRADIENT
+// =============================================================================
+
+export const gradient = {
+  /** Main dashboard background from Figma */
+  dashboard: '#070707',
+  /** Teal glow overlay at top - simulates Figma ellipses */
+  tealGlow: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(4, 67, 91, 0.6) 0%, transparent 70%)',
+  /** Bottom blur overlay */
+  bottomBlur: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, transparent 100%)',
+};

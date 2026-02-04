@@ -46,7 +46,8 @@ export function LoginPage() {
             minHeight: '100%',
             display: 'flex',
             alignItems: 'center',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            bgcolor: 'background.default',
+            background: 'linear-gradient(180deg, #0d3d38 0%, #062923 30%, #000000 100%)',
             py: 4,
           }}
         >
@@ -55,8 +56,11 @@ export function LoginPage() {
               elevation={0}
               sx={{
                 p: { xs: 3, sm: 5 },
-                borderRadius: 4,
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: '0 0 40px rgba(34, 211, 238, 0.08)',
               }}
             >
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
@@ -135,9 +139,10 @@ export function LoginPage() {
                   sx={{
                     py: 1.5,
                     fontSize: '1rem',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                    background: 'linear-gradient(135deg, #22d3ee 0%, #0d9488 100%)',
+                    color: 'background.default',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                      background: 'linear-gradient(135deg, #06b6d4 0%, #0f766e 100%)',
                     },
                   }}
                 >

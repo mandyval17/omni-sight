@@ -1,5 +1,5 @@
+import { SplashScreen } from '@/components/ui/SplashScreen';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { Box, CircularProgress } from '@mui/material';
 import { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export function AuthGuard({ children, guestOnly = false }: AuthGuardProps) {
 
     if (guestOnly) {
       if (user) {
-        history.replace('/home');
+        history.replace('/dashboard');
       }
     } else {
       if (!user) {
@@ -28,19 +28,7 @@ export function AuthGuard({ children, guestOnly = false }: AuthGuardProps) {
   }, [guestOnly, user, isLoading, history, location.pathname]);
 
   if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          bgcolor: 'background.default',
-        }}
-      >
-        <CircularProgress size={40} />
-      </Box>
-    );
+    return <SplashScreen />;
   }
 
   if (guestOnly && user) return null;

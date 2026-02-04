@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loginMutation.mutate(data, {
         onSuccess: (res) => {
           if (res?.data?.user) setUser(res.data.user);
-          history.push('/home');
+          history.push('/dashboard');
         },
       });
     },
